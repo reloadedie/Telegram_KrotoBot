@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -54,13 +55,14 @@ namespace Telegram_KrotoBot
             listSpam.Add("вострецова");
             listSpam.Add("dfgdg");
             #endregion
-            Console.WriteLine($"Получено новое сообщение, его тип: {message.Type}");
+
+            Console.WriteLine($"Получено новое сообщение, его тип: {message.Type}" +
+                $"его длина {new StringInfo(message.Text).LengthInTextElements}");
             if (message.Type != MessageType.Text)
                 return;
 
             bool yesSpam = listSpam.Any(ls => message.Text.ToLower().Contains(ls));
             bool yesUser = listUsers.Any(lu => message.From.ToString().Contains(lu));
-
             if (yesSpam | yesUser)
             {
                 await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
@@ -86,8 +88,6 @@ namespace Telegram_KrotoBot
             Console.WriteLine(ErrorMessage);
             return Task.CompletedTask;
         }
-
-        // public static Task DisplayCountInBlackAsync()
 
     }
 }
