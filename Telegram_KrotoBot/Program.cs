@@ -71,7 +71,6 @@ namespace Telegram_KrotoBot
             Console.WriteLine($"Для бота есть команды. подробнее /help");
             Console.ReadLine();
             cancellationToken.Cancel();
-            
         }
     }
 }
