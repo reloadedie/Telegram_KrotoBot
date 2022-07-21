@@ -66,7 +66,9 @@ namespace Telegram_KrotoBot
             if (yesSpam | yesUser)
             {
                 await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
-                Console.WriteLine($"Удалено спам - сообщение типа {message.Type}");
+                Console.WriteLine($"Удалено спам - сообщение (тип {message.Type}) ,"
+                   + $"написал его {message.From}"
+                   + $" бан слово: {message.Text}");
             }
         }
 
