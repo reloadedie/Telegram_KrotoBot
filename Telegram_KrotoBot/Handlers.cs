@@ -55,22 +55,47 @@ namespace Telegram_KrotoBot
             listSpam.Add("вострецова");
             listSpam.Add("dfgdg");
             #endregion
-
+            Console.WriteLine("");
             Console.WriteLine($"Получено новое сообщение, его тип: {message.Type}" +
-                $"его длина {new StringInfo(message.Text).LengthInTextElements}");
+                $"; его длина {new StringInfo(message.Text).LengthInTextElements}");
             if (message.Type != MessageType.Text)
                 return;
 
-            bool yesSpam = listSpam.Any(ls => message.Text.ToLower().Contains(ls));
-            bool yesUser = listUsers.Any(lu => message.From.ToString().Contains(lu));
-            if (yesSpam | yesUser)
+            bool yesUser = listUsers.Any(listuser => message.From.ToString().Contains(listuser));
+            if (yesUser)
             {
                 await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
-                Console.WriteLine($"Удалено спам - сообщение (тип {message.Type}) ,"
-                   + $"написал его {message.From}"
+                Console.WriteLine($"Удалено сообщение (тип {message.Type}), {message.From}" +
+                    $" находится в чёрном списке");
+                await botClient.SendTextMessageAsync(message.Chat.Id, message.Text =
+                    $"{message.From} ты в бане!");
+            }
+
+            bool yesSpam = listSpam.Any(listspam => message.Text.ToLower().Contains(listspam));
+            if (yesSpam)
+            {
+                await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
+                Console.WriteLine($"Удалено спам - сообщение (тип {message.Type}),"
+                   + $" написал его {message.From}"
                    + $" бан слово: {message.Text}");
+                await botClient.SendTextMessageAsync(message.Chat.Id, message.Text =
+                    $"{message.From} Эээ нехорошо пишешь!");
+
+                await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId - 1);
+
+                 /*Thread deleteBotThread = new Thread(() =>
+                 {
+                     BotDeleteMethod(botClient, message);
+                 });
+                 deleteBotThread.Start();
+                */
             }
         }
+      /*  public async Task BotDeleteMethod(ITelegramBotClient botClient, Message message)
+        {
+            await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
+            Thread.Sleep(1500);
+        }*/
 
         private static Task UnknownUpdateHandlerAsync(ITelegramBotClient botClient, Update update)
         {

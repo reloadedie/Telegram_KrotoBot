@@ -15,44 +15,7 @@ namespace Telegram_KrotoBot
             Thread newThread = new Thread(BotMethod);
             newThread.Start();
 
-            while(true) 
-                switch (Console.ReadLine())
-                {
-                    case "/help":
-                        Console.WriteLine("Команды для бота:");
-                        Console.WriteLine("\t/help - вывод списка команд");
-                        Console.WriteLine("\t/command - запустить какую-то команду");
-                        Console.WriteLine("Ваши действия?");
-                        break;
 
-                    case "/command":
-                        Console.WriteLine($"какая-то команда выполнена.");
-                        break;
-                    case "/continue":
-
-                        Console.WriteLine($"продолжаем очистку");
-                        break;
-
-                    case "/addword":
-
-                        Console.WriteLine($"добавляем слово...");
-                        break;
-
-                    case "/adduser":
-
-                        Console.WriteLine($"добавляем пользователя...");
-                        break;
-
-                    case "/deleteword":
-
-                        Console.WriteLine($"удаляем слово...");
-                        break;
-
-                    case "/deleteuser":
-
-                        Console.WriteLine($"удаляем пользователя...");
-                        break;
-                }
         }
 
         private static void BotMethod()
@@ -69,8 +32,44 @@ namespace Telegram_KrotoBot
 
             Console.WriteLine($"Бот запущен и ждет сообщения...");
             Console.WriteLine($"Для бота есть команды. подробнее /help");
+
             Console.ReadLine();
             cancellationToken.Cancel();
+
+            while (true)
+                switch (Console.ReadLine())
+                {
+                    case "/help":
+                        Console.WriteLine("Команды для бота:");
+                        Console.WriteLine("\t/help - вывод списка команд");
+                        Console.WriteLine("\t/command - запустить какую-то команду");
+                        Console.WriteLine("Ваши действия?");
+                        break;
+
+                    case "/command":
+                        Console.WriteLine($"какая-то команда выполнена.");
+                        break;
+
+                    case "/continue":
+                        Console.WriteLine($"продолжаем очистку");
+                        break;
+
+                    case "/addword":
+                        Console.WriteLine($"добавляем слово...");
+                        break;
+
+                    case "/adduser":
+                        Console.WriteLine($"добавляем пользователя...");
+                        break;
+
+                    case "/deleteword":
+                        Console.WriteLine($"удаляем слово...");
+                        break;
+
+                    case "/deleteuser":
+                        Console.WriteLine($"удаляем пользователя...");
+                        break;
+                }
         }
     }
 }
