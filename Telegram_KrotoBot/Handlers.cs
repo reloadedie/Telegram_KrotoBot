@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -21,6 +22,7 @@ namespace Telegram_KrotoBot
             {
                 UpdateType.Message => BotOnMessageReceived(botClient, update.Message!),
                 UpdateType.EditedMessage => BotOnMessageReceived(botClient, update.EditedMessage!),
+               // UpdateType.ChatJoinRequest => BotOnChatReceived(botClient, update),
                 _ => UnknownUpdateHandlerAsync(botClient, update)
             };
 
@@ -39,7 +41,8 @@ namespace Telegram_KrotoBot
             List<string> listUsers = new List<string>();
             #region
             listUsers.Add("someuser");
-            listUsers.Add("Penttix");
+            //listUsers.Add("Penttix");
+            listUsers.Add("studentkrot_bot");
             #endregion
 
             List<string> listSpam = new List<string>();
@@ -55,48 +58,77 @@ namespace Telegram_KrotoBot
             listSpam.Add("вострецова");
             listSpam.Add("dfgdg");
             #endregion
+
             Console.WriteLine("");
-            Console.WriteLine($"Получено новое сообщение, его тип: {message.Type}" +
-                $"; его длина {new StringInfo(message.Text).LengthInTextElements}");
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine($"Получено новое сообщение, его тип: {message.Type};" +
+                $" его длина {new StringInfo(message.Text).LengthInTextElements}");
+            Console.ResetColor();
             if (message.Type != MessageType.Text)
                 return;
 
-            bool yesUser = listUsers.Any(listuser => message.From.ToString().Contains(listuser));
+            bool yesUser = listUsers.Any(listU => message.From.ToString().Contains(listU));
             if (yesUser)
             {
                 await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine($"Удалено сообщение (тип {message.Type}), {message.From}" +
                     $" находится в чёрном списке");
+                Console.ResetColor();
                 await botClient.SendTextMessageAsync(message.Chat.Id, message.Text =
                     $"{message.From} ты в бане!");
+               
+                Thread deleteBotThread = new Thread(() =>
+                {
+                    BotDeleteMethod(botClient, message);
+                });
+                deleteBotThread.Start();
             }
 
-            bool yesSpam = listSpam.Any(listspam => message.Text.ToLower().Contains(listspam));
+            bool yesSpam = listSpam.Any(listS => message.Text.ToLower().Contains(listS));
             if (yesSpam)
             {
                 await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine($"Удалено спам - сообщение (тип {message.Type}),"
-                   + $" написал его {message.From}"
-                   + $" бан слово: {message.Text}");
+                   + $" написал его {message.From}");
+                Console.ResetColor();
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine($" сообщение с бан-словом: {message.Text}");
+                Console.ResetColor();
                 await botClient.SendTextMessageAsync(message.Chat.Id, message.Text =
                     $"{message.From} Эээ нехорошо пишешь!");
 
-                await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId - 1);
+                Thread deleteBotThread = new Thread(() =>
+                {
+                    BotDeleteMethod(botClient, message);
+                });
+                deleteBotThread.Start();
 
-                 /*Thread deleteBotThread = new Thread(() =>
-                 {
-                     BotDeleteMethod(botClient, message);
-                 });
-                 deleteBotThread.Start();
-                */
             }
+            /*
+            for (int i = 1; i < 11; i++)
+            {
+                //тут удаление сообщения
+                //
+                if (i > 10)
+                {
+                    await botClient.SendTextMessageAsync(message.Chat.Id,
+                        message.Text = $"{message.From}, ты сейчас будешь забанен!");
+                    i = 0;
+                    break;
+                }
+            }
+           */
         }
-      /*  public async Task BotDeleteMethod(ITelegramBotClient botClient, Message message)
+        
+        private static void BotDeleteMethod(ITelegramBotClient botClient, Message message)
         {
-            await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
-            Thread.Sleep(1500);
-        }*/
-
+            Thread.Sleep(5000);
+            botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId - 1);
+        }
+        //unkowns + errors nadlers
+        #region
         private static Task UnknownUpdateHandlerAsync(ITelegramBotClient botClient, Update update)
         {
             Console.WriteLine($"Неизвестный тип сообщения: {update.Type}");
@@ -115,6 +147,6 @@ namespace Telegram_KrotoBot
             Console.WriteLine(ErrorMessage);
             return Task.CompletedTask;
         }
-
+        #endregion
     }
 }
